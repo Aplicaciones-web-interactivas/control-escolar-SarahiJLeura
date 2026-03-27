@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 
+//home
+route::get('/', [AuthController::class, 'home'])->name('index.home');
 //register
 route::get('/register', [AuthController::class, 'indexRegister'])->name('index.register');
 route::post('/register', [AuthController::class, 'saveRegister'])->name('save.register');

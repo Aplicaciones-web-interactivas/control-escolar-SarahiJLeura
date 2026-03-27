@@ -1,52 +1,48 @@
 @extends('layouts.app')
-
+@section('title', 'Calificaciones')
+@section('header', 'Calificaciones')
 @section('content')
-<div>
-    <h1>Modificar Calificación</h1>
+    <div class="max-w-6xl mx-auto space-y-6">
+        <div class="bg-white p-6 rounded-xl shadow border">
+            <h1 class="text-xl font-bold mb-4">Modificar calificación</h1>
+            <form action="{{ route('update.calificacion', $gradeEdit->id) }}" method="POST">
+                @csrf
+                @method('PUT')
 
-    <form action="{{ route('update.calificacion', $gradeEdit->id) }}" method="POST">
-        @csrf
-        @method('PUT')
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-bold mb-2">Grupo:</label>
+                    <input type="text" 
+                        value="{{ $gradeEdit->enrollment->group->name }} | 
+                            {{ $gradeEdit->enrollment->group->schedule->course->name }} | 
+                            {{ $gradeEdit->enrollment->group->schedule->teacher->name }} | 
+                            {{ $gradeEdit->enrollment->group->schedule->start_time }} - 
+                            {{ $gradeEdit->enrollment->group->schedule->end_time }}"
+                        class="w-full border rounded-lg px-3 py-2 bg-gray-100 cursor-not-allowed" readonly>
+                </div>
 
-        <div class="mb-4">
-            <label>Grupo:</label>
-            <select name="group_id" class="border rounded w-full">
-                @foreach($groups as $gr)
-                    <option value="{{ $gr->id }}"
-                        {{ $gr->id == $gradeEdit->enrollment->group_id ? 'selected' : '' }}>
-                        
-                        {{ $gr->name }} | 
-                        {{ $gr->schedule->course->name }} | 
-                        {{ $gr->schedule->teacher->name }} | 
-                        {{ $gr->schedule->start_time }} - {{ $gr->schedule->end_time }}
-                    </option>
-                @endforeach
-            </select>
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-bold mb-2">Alumno:</label>
+                    <input type="text"
+                        value="{{ $gradeEdit->enrollment->user->institutional_key }} | 
+                            {{ $gradeEdit->enrollment->user->name }}"
+                        class="w-full border rounded-lg px-3 py-2 bg-gray-100 cursor-not-allowed" readonly>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-bold mb-2">Calificación:</label>
+                    <input type="number" name="grade" min="0" max="10" step="0.1"
+                        value="{{ $gradeEdit->grade }}" class="border rounded w-32">
+                </div>
+
+                <div class="flex align-items gap-5">
+                    <a href="{{ route('index.calificaciones') }}" class="bg-red-500 text-white font-bold py-2 px-4 rounded mt-4">
+                        Cancelar
+                    </a>
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">
+                        Guardar cambios
+                    </button>
+                </div>
+            </form>
         </div>
-
-        <div class="mb-4">
-            <label>Alumno:</label>
-            <select name="user_id" class="border rounded w-full">
-                <option value="{{ $gradeEdit->enrollment->user->id }}" selected>
-                    {{ $gradeEdit->enrollment->user->institutional_key }} | 
-                    {{ $gradeEdit->enrollment->user->name }}
-                </option>
-            </select>
-        </div>
-
-        <div class="mb-4">
-            <label>Calificación:</label>
-            <input type="number" name="grade" min="0" max="100" step="0.1"
-                   value="{{ $gradeEdit->grade }}" class="border rounded w-32">
-        </div>
-
-        <a href="{{ route('index.calificaciones') }}" class="bg-red-500 text-white px-4 py-2 rounded">
-            Cancelar
-        </a>
-
-        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">
-            Guardar cambios
-        </button>
-    </form>
-</div>
+    </div>
 @endsection

@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('institutional_key')->unique();
-            //$table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('role')->default('student');
             $table->boolean('is_activate')->default(true);

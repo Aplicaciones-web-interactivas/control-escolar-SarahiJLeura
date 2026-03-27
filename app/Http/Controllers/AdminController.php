@@ -42,7 +42,7 @@ class AdminController extends Controller
 
     public function indexHorario(){
         $courses = course::all();
-        $teachers = User::all();
+        $teachers = User::where('role', 'teacher')->get();
         $horarios = schedule::all();
         return view('admin.horarios', compact('courses','teachers','horarios'));
     }
@@ -105,7 +105,7 @@ class AdminController extends Controller
     public function editHorario($id){
         $horario = schedule::find($id);
         $courses = course::all();
-        $teachers = User::all();
+        $teachers = User::where('role', 'teacher')->get();
         return view('admin.modificaHorario', compact('horario', 'courses', 'teachers'));
     }
 
@@ -203,14 +203,13 @@ class AdminController extends Controller
     }
 
     public function editCalificacion($id){
-        $gradeEdit = Grade::with('enrollment.user', 'enrollment.group.schedule.course')->findOrFail($id);
-        $groups = Group::with('schedule.course', 'schedule.teacher')->get();
-        return view('admin.modificaCalificacion', compact('gradeEdit', 'groups'));
+        $gradeEdit = Grade::with('enrollment.user', 'enrollment.group.schedule')->findOrFail($id);
+        return view('admin.modificaCalificacion', compact('gradeEdit'));
     }
 
     public function updateCalificacion(Request $request, $id){
         $request->validate([
-            'grade' => 'required|numeric|min:0|max:100',
+            'grade' => 'required|numeric|min:0|max:10',
         ]);
         $gradeEdit = grade::find($id);
         if ($gradeEdit != null){
@@ -232,23 +231,26 @@ class AdminController extends Controller
 
     public function indexInscripciones(Request $request){
         $groups = group::with('schedule.course', 'schedule.teacher')->get();
-        // grupo seleccionado
-        $groupId = $request->group_filter;
+        // grupos seleccionados en agregar y tabla
+        $groupForm = $request->group_form;
+        $groupTable = $request->group_table;
         //usuarios solo si hay un grupo seleccionado
-        if ($groupId) {
-            $users = User::whereDoesntHave('enrollments', function ($query) use ($groupId) {
-                $query->where('group_id', $groupId);
+        if ($groupForm && $groupForm != -1) {
+            $users = User::where('role', 'student')->whereDoesntHave('enrollments', function ($query) use ($groupForm) {
+                $query->where('group_id', $groupForm);
             })->get();
         } else {
             $users = collect();
         }
         // inscripciones para tabla
         $enrollments = enrollment::with('user', 'group.schedule.course', 'group.schedule.teacher');
-        if ($groupId) {
-            $enrollments->where('group_id', $groupId);
+        if ($groupTable && !empty($groupTable)) {
+            $enrollments->where('group_id', $groupTable);
+        } else {
+            $enrollments->whereRaw('1 = 0');
         }
         $enrollments = $enrollments->get();
-        return view('admin.inscripciones', compact('groups', 'users', 'enrollments', 'groupId'));
+        return view('admin.inscripciones', compact('groups', 'users', 'enrollments', 'groupForm', 'groupTable'));
     }
 
     public function saveInscripcion(Request $request){
@@ -276,7 +278,7 @@ class AdminController extends Controller
         $groups = group::with('schedule.course', 'schedule.teacher')->get();
 
         // usuarios disponibles + el actual
-        $users = User::where(function ($query) use ($enrollEdit) {
+        $users = User::where('role', 'student')->where(function ($query) use ($enrollEdit) {
             $query->whereDoesntHave('enrollments', function ($q) use ($enrollEdit) {
                 $q->where('group_id', $enrollEdit->group_id);
             })

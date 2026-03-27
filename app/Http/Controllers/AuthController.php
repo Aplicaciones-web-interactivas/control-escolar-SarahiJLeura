@@ -18,6 +18,10 @@ class AuthController extends Controller
         return view('auth.register');
     }
 
+    public function home(){
+        return view('welcome');
+    }
+
     public function saveLogin(Request $request){
         $request->validate([
             'user_key' => 'required',
