@@ -49,6 +49,7 @@
                 <x-nav-link route="teacher.dashboard" icon="dashboard">Dashboard</x-nav-link>
                 <x-nav-link route="teacher.grupos" icon="group">Grupos</x-nav-link>
                 <x-nav-link route="teacher.calificaciones" icon="grade">Calificaciones</x-nav-link>
+                <x-nav-link route="teacher.tareas" icon="assignment">Tareas</x-nav-link>
             @endif
 
         </nav>
@@ -89,6 +90,7 @@
                     <x-bottom-nav-link route="teacher.dashboard" icon="dashboard" label="Dashboard"/>
                     <x-bottom-nav-link route="teacher.grupos" icon="group" label="Grupos"/>
                     <x-bottom-nav-link route="teacher.calificaciones" icon="grade" label="Calificaciones"/>
+                    <x-bottom-nav-link route="teacher.tareas" icon="assignment" label="Tareas"/>
                 @endif
             @else
                 <x-bottom-nav-link route="index.home" icon="home" label="Home"/>
